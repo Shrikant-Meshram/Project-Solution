@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const xyz=require(validator)
+const xyz=require("validator")
 
 const authorSchema = new mongoose.Schema( {
     fname: {type:String, required:true},
