@@ -5,8 +5,10 @@ const blogsSchema = new mongoose.Schema( {
     body: {type:String,required:true},
      authorId: {type:mongoose.Schema.Types.ObjectId,ref:"Author",required:true},
     tags: [ String ],
-    category: {type:String, required:true},
+    category: {type:String,required:true},
      subcategory: [String] ,
+     publishedAt:Date,
+     deletedAt:Date,
       isDeleted: {type:Boolean, default: false}, 
      isPublished: {type:Boolean, default: false}
 
@@ -16,5 +18,3 @@ module.exports = mongoose.model('Blogs', blogsSchema)
 
 
 
-// String, Number
-// Boolean, Object/json, array
