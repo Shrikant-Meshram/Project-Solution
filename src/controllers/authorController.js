@@ -1,4 +1,5 @@
 const authorModel= require("../models/authorModel")
+const jwt=require("jsonwebtoken")
 
 const createAuthor= async function (req, res) {
     try {
@@ -17,6 +18,26 @@ const createAuthor= async function (req, res) {
 
 }
 
+const loginAuthor=async function(req,res){
+    try{
+    let {email,password}=req.body
+    let data=await authorModel.find({email:email,password:password})
+    if(!data){
+        res.status(404).send("Please provide valid email id and password")
+    } 
+    else{
+        let token=jwt.sign({id:data._id},"Functionup uranium")
+        res.status(200).send({msg:token})
+
+    }
+}
+catch(err){
+    res.status(500).send({msg:err.message})
+}
+
+}
+
 
 
 module.exports.createAuthor= createAuthor
+module.exports.loginAuthor=loginAuthor

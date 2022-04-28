@@ -23,39 +23,27 @@ const createBlogs = async function (req, res) {
         else res.status(400).send({ msg: "BAD REQUEST"})
     }
     catch (err) {
-        console.log("This is the error :", err.message)
+        
         res.status(500).send({ msg: "Error", error: err.message })
     }
 }
 
 const getBlogs=async function(req,res){
     try{
-        let newArr=[]
+        let data=req.query 
         
-        let data=await blogsModel.find(req.query)
-        
-        if(data.length===0){
-            let data2=await blogsModel.find({isDeleted:false,isPublished:true})
-            if(data2.length===0){
-                res.status(404).send("Not Found")
-            }
-            else{
-            res.status(200).send({msg:data2})
-            }
+        let data1=await blogsModel.find({$and:[data,{isDeleted:false},{isPublished:true}]})
+        if(data1.length===0){
+            return res.status(404).send({msg:"Not Found"})
         }
         else{
-            for(let i=0;i<data.length;i++){
-                if(data[i].isDeleted==false && data[i].isPublished==true){
-                    let data1=data[i]
-                    newArr.push(data1)
+            return res.status(200).send({msg:data1})
 
-                }
-            }
-            res.status(200).send({msg:newArr})
+        }
 
             
 
-        }
+        
     }
     catch(err){
         res.status(500).send({msg:err.message})
@@ -64,27 +52,52 @@ const getBlogs=async function(req,res){
 }
 const updateBlogs=async function(req,res){
     try{
-        let {title,body,tags,subcategory}=req.body
+        
         let id=req.params.blogId 
         let data=await blogsModel.findById(id)
 
+        if(!data){
+            return res.status(400).send({msg:"blog not present"})
+        }
+        const updateBlog=await blogsModel.findOne({_id:id,isDeleted:false})
+        if(!updateBlog){
+            return res.status(404).send({msg:"Not Found"})
+
+        }
         
-        if(data!==null && data.isDeleted===false){
-            let update1=data.tags
-            let update2=data.subcategory
-            let date=new Date()
-            update1.push(tags)
-            update2.push(subcategory)
-            let savedData=await blogsModel.findOneAndUpdate({_id:data._id},
-            {$set:{title:title,body:body,tags:update1,subcategory:update2,isPublished:true,publishedAt:`${date}`}},
-            {new:true}
+        if(updateBlog.isPublished===true){
+            return res.status(404).send({msg:"already published"})
+        }
+        if(req.body.title){
+            updateBlog.title=req.body.title
+        }
+        if(req.body.body){
+            updateBlog.body=req.body.body
+        }
+        
+        if(req.body.tags){
+            let value=req.body.tags
             
-            )
-          res.status(200).send({msg:savedData})
+            let update1=updateBlog.tags
+            
+            update1.push(value)
+            
+            updateBlog.tags=update1 
+            
         }
-        else{
-            res.status(404).send("Not present")
+    
+        if(req.body.subcategory){
+            let value=req.body.subcategory
+            let update2=updateBlog.subcategory
+            update2.push(value)
+            updateBlog.subcategory=update2 
         }
+        
+        let date=new Date()
+        updateBlog.isPublished=true
+        updateBlog.publishedAt=`${date}`
+        updateBlog.save()
+        res.status(200).send({msg:updateBlog})
 
     }
     catch(err){
@@ -99,14 +112,17 @@ const deleteId=async function(req,res){
     
     let date=new Date()
     let blogid=await blogsModel.findById(data)
+    if(!blogid){
+        return res.status(404).send({msg:"Blog id doesnot exist"})
+    }
     
-    if(blogid!==null && blogid.isDeleted===false){
+    else if(blogid.isDeleted===false){
         let savedData=await blogsModel.findOneAndUpdate({_id:blogid._id},
             {$set:{isDeleted:true,deletedAt:`${date}`}},{new:true})
-        res.status(200).send({})    
+        return res.status(200).send({})    
     }
     else{
-        res.status(404).send("Not Found")
+        return res.status(404).send("Not Found")
     }
 }
 catch(err){
@@ -129,7 +145,9 @@ const deleteByQuery=async function(req,res){
     }
     else{
         for(let i=0;i<data.length;i++){
+            if(data[i].isDeleted===false){
             await blogsModel.findOneAndUpdate({_id:data[i]._id},{$set:{isDeleted:true,deletedAt:`${date}`}})
+            }
             
         }
         res.status(200).send({})
@@ -148,9 +166,6 @@ catch(err){
 
 
 
-// DELETE /blogs?queryParams
-// Delete blog documents by category, authorid, tag name, subcategory name, unpublished
-// If the blog document doesn't exist then return an HTTP status of 404 with a body like this
 
 
 
