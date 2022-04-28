@@ -140,17 +140,25 @@ const deleteByQuery=async function(req,res){
     try{
     let date=new Date()
     const data=await blogsModel.find(req.query)
+
     if(!data){
-        res.status(404).send("Not Found")
+        return res.status(404).send("No Blogs Found")
     }
     else{
+        let c=0
         for(let i=0;i<data.length;i++){
             if(data[i].isDeleted===false){
+                c=c+1
             await blogsModel.findOneAndUpdate({_id:data[i]._id},{$set:{isDeleted:true,deletedAt:`${date}`}})
             }
             
         }
-        res.status(200).send({})
+        if(c!==0){
+            return res.status(200).send({})
+        }
+        else{
+            return res.status(404).send({msg:"No items found to be deleted"})
+        }
 
     }
 }

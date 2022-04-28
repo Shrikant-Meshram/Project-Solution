@@ -21,12 +21,12 @@ const createAuthor= async function (req, res) {
 const loginAuthor=async function(req,res){
     try{
     let {email,password}=req.body
-    let data=await authorModel.find({email:email,password:password})
+    let data=await authorModel.findOne({email:email,password:password})
     if(!data){
         res.status(404).send("Please provide valid email id and password")
     } 
     else{
-        let token=jwt.sign({id:data._id},"Functionup uranium")
+        let token=jwt.sign({userId:data._id,batch:"uranium"},"Project1")
         res.status(200).send({msg:token})
 
     }

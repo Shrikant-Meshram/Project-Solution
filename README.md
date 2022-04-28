@@ -56,6 +56,8 @@ Use a middleware for authentication purpose.
 Authorisation
 Make sure that only the owner of the blogs is able to edit or delete the blog.
 In case of unauthorized access return an appropirate error message.
+
+
 Testing (Self-evaluation During Development)
 To test these apis create a new collection in Postman named Project 1 Blogging
 Each api should have a new request in this collection
