@@ -60,13 +60,14 @@ const updateBlogs=async function(req,res){
             return res.status(400).send({msg:"blog not present"})
         }
         const updateBlog=await blogsModel.findOne({_id:id,isDeleted:false})
+        console.log(updateBlog)
         if(!updateBlog){
             return res.status(404).send({msg:"Not Found"})
 
         }
         
         if(updateBlog.isPublished===true){
-            return res.status(404).send({msg:"already published"})
+            return res.status(400).send({msg:"already published"})
         }
         if(req.body.title){
             updateBlog.title=req.body.title
@@ -139,29 +140,24 @@ catch(err){
 const deleteByQuery=async function(req,res){
     try{
     let date=new Date()
-    const data=await blogsModel.find(req.query)
+    const data=await blogsModel.find({$and:[req.query,{isDeleted:false},{isPublished:false}]})
 
     if(!data){
         return res.status(404).send("No Blogs Found")
     }
     else{
-        let c=0
+        
         for(let i=0;i<data.length;i++){
-            if(data[i].isDeleted===false){
-                c=c+1
+            
             await blogsModel.findOneAndUpdate({_id:data[i]._id},{$set:{isDeleted:true,deletedAt:`${date}`}})
             }
             
         }
-        if(c!==0){
-            return res.status(200).send({})
-        }
-        else{
-            return res.status(404).send({msg:"No items found to be deleted"})
-        }
+        return res.status(200).send({})
+        
 
     }
-}
+
 catch(err){
     res.status(500).send({msg:err.message})
 }
