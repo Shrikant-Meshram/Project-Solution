@@ -7,13 +7,13 @@ const middlewareController=require("../middleware/mid")
 
 
 
-router.post("/createAuthor", authorController.createAuthor)
-router.post("/login",authorController.loginAuthor)
-router.post("/blogs",middlewareController.authenticate,middlewareController.authorise1,blogsController.createBlogs)
-router.get("/blogs",middlewareController.authenticate,middlewareController.authorise1,blogsController.getBlogs)
-router.put("/blogs/:blogId",middlewareController.authenticate,middlewareController.authorise1,blogsController.updateBlogs)
-router.delete("/blogs/:blogId",middlewareController.authenticate,middlewareController.authorise1,blogsController.deleteId)
-router.delete("/blogs",middlewareController.authenticate,middlewareController.authorise1,blogsController.deleteByQuery)
+router.post("/createAuthor", authorController.createAuthor) // Author creation
+router.post("/login",authorController.loginAuthor)   //Author login 
+router.post("/blogs",middlewareController.authenticate,middlewareController.authorise1,blogsController.createBlogs) //creating blogs for the author who is logged in
+router.get("/blogs",middlewareController.authenticate,middlewareController.authorise1,blogsController.getBlogs) //get all th blogs when the condition is satisfied which is passed in query params and which belongs to the same author who is logged in
+router.put("/blogs/:blogId",middlewareController.authenticate,middlewareController.authorise1,blogsController.updateBlogs) // updating a blog when blogId is present in path params
+router.delete("/blogs/:blogId",middlewareController.authenticate,middlewareController.authorise1,blogsController.deleteId)  //deleting a blog when blogId is present in path params 
+router.delete("/blogs",middlewareController.authenticate,middlewareController.authorise1,blogsController.deleteByQuery) //deleting blogs when conditions are given in query params
 
 
 

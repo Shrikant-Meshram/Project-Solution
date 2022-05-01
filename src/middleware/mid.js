@@ -31,16 +31,16 @@ const authorise1=async function(req,res,next){
     try{
         let token=req.headers["x-api-key"]
         let decodedToken=jwt.verify(token,"Project1")
-        let blogId=req.params.blogId  //params //delete,put
-        let queryAuthor=req.query.authorId  //query //get,delete
+        let blogId=req.params.blogId  //get blogd from path params for put and delete api
+        let queryAuthor=req.query.authorId  //get authorId from query parameter for get and delete api
         
         
         
         
-        let data=decodedToken.userId
-        let authorID=req.body.authorId
+        let data=decodedToken.userId //we are fetching authorid
+        let authorID=req.body.authorId // get the authorId from req.body for post api
         console.log(authorID)
-        if(authorID){
+        if(authorID){  //first check whether authorId is present in body then exexute if else it will not go to next handler
             if(data==authorID){
                 
                 next()
@@ -55,7 +55,7 @@ const authorise1=async function(req,res,next){
 
         
 
-        else if(blogId){
+        else if(blogId){ // checks whether blogId is present in path params if present then execute this else it will not go to next handler
             let xyz=await blogsModel.findById(blogId)
             let pathAuthor=xyz.authorId
             
@@ -76,7 +76,7 @@ const authorise1=async function(req,res,next){
 
         
         
-        else if(queryAuthor){
+        else if(queryAuthor){ //checks whether authorId is present in query parameter then exexute this else it will not go to next handler
             if(queryAuthor===data){
                 next()
             }
@@ -112,80 +112,6 @@ catch(err){
 }
 
 }
-const authorise2=async function(req,res,next){
-    try{
-        let token=req.headers["x-api-key"]
-        let decodedToken=jwt.verify(token,"Project1")
-        
-        let data=decodedToken.userId
-        let blogId=req.params.blogId  //params //delete,put
-        
-        let xyz=await blogsModel.findById(blogId)
-        let pathAuthor=xyz.authorId
-        if(pathAuthor){
-            
-            
-            
-            if(data!=pathAuthor.toString()){
-                
-                return res.status(403).send({msg:"cannot access other's account"})
-                
-            }
-         next()
-                
 
-            
-
-        }
-
-
-        let queryAuthor=req.query.authorId  //query //get,delete
-        
-        
-        if(queryAuthor){
-            if(queryAuthor===data){
-                next()
-            }
-            else{
-                return res.status(403).send({msg:"cannot access other's account"})
-
-            }
-        }
-        else{
-            return res.status(400).send({msg:"BAD REQUEST"})
-        }
-    }
-    catch(err){
-        res.status(500).send({msg:err.message})
-    }
-
-}
-
-
-const authorise3=async function(req,res,next){
-    try{
-        let queryAuthor=req.query.authorId  //query //get,delete
-        
-        
-        if(queryAuthor){
-            if(queryAuthor===data){
-                next()
-            }
-            else{
-                return res.status(403).send({msg:"cannot access other's account"})
-
-            }
-        }
-        else{
-            return res.status(400).send({msg:"BAD REQUEST"})
-        }
-
-    }
-    catch(err){
-        res.ststus(500).send({msg:err.message})
-    }
-}
 module.exports.authenticate=authenticate
 module.exports.authorise1=authorise1
-module.exports.authorise2=authorise1
-module.exports.authorise3=authorise1

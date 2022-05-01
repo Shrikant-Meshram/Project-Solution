@@ -7,24 +7,16 @@ const authorModel=require("../models/authorModel")
 
 const createBlogs = async function (req, res) {
     try {
-        let data = req.body
-        let author=data.authorId
-        if(!author){
-            res.status(404).send("Author is not present")
-        }
-        let authorID=await authorModel.findById(author)
-        if(!authorID){
-            req.status(404).send("Please provide valid author id")
-        }
-        if ( Object.keys(data).length != 0) {
-            let savedData = await blogsModel.create(data)
-            res.status(201).send({ msg: savedData })
-        }
-        else res.status(400).send({ msg: "BAD REQUEST"})
+        let data = req.body 
+        
+        
+        let savedData = await blogsModel.create(data) //if all the consitions satisfy then like title,body etc all the mandatory so it will execute this
+        return res.status(201).send({ msg: savedData })
+        
     }
     catch (err) {
         
-        res.status(500).send({ msg: "Error", error: err.message })
+        return res.status(400).send({ msg: "Error", error: err.message })
     }
 }
 
@@ -32,7 +24,7 @@ const getBlogs=async function(req,res){
     try{
         let data=req.query 
         
-        let data1=await blogsModel.find({$and:[data,{isDeleted:false},{isPublished:true}]})
+        let data1=await blogsModel.find({$and:[data,{isDeleted:false},{isPublished:true}]}) //checks whether all the conditions will satisfy or not if not then send error message
         if(data1.length===0){
             return res.status(404).send({msg:"Not Found"})
         }
@@ -56,17 +48,17 @@ const updateBlogs=async function(req,res){
         let id=req.params.blogId 
         let data=await blogsModel.findById(id)
 
-        if(!data){
+        if(!data){ //if no data found then send error message
             return res.status(400).send({msg:"blog not present"})
         }
-        const updateBlog=await blogsModel.findOne({_id:id,isDeleted:false})
+        const updateBlog=await blogsModel.findOne({_id:id,isDeleted:false}) // checks whether all conditions are satisfied or not
         console.log(updateBlog)
         if(!updateBlog){
             return res.status(404).send({msg:"Not Found"})
 
         }
-        
-        if(updateBlog.isPublished===true){
+         
+        if(updateBlog.isPublished===true){ // cant't update if it is already published
             return res.status(400).send({msg:"already published"})
         }
         if(req.body.title){
@@ -97,7 +89,7 @@ const updateBlogs=async function(req,res){
         let date=new Date()
         updateBlog.isPublished=true
         updateBlog.publishedAt=`${date}`
-        updateBlog.save()
+        updateBlog.save() //updates the particular document if present or create the document if it is not present 
         res.status(200).send({msg:updateBlog})
 
     }
@@ -118,7 +110,7 @@ const deleteId=async function(req,res){
     }
     
     else if(blogid.isDeleted===false){
-        let savedData=await blogsModel.findOneAndUpdate({_id:blogid._id},
+        let savedData=await blogsModel.findOneAndUpdate({_id:blogid._id}, // 
             {$set:{isDeleted:true,deletedAt:`${date}`}},{new:true})
         return res.status(200).send({})    
     }
@@ -141,9 +133,10 @@ const deleteByQuery=async function(req,res){
     try{
     let date=new Date()
     const data=await blogsModel.find({$and:[req.query,{isDeleted:false},{isPublished:false}]})
+    console.log(data)
 
-    if(!data){
-        return res.status(404).send("No Blogs Found")
+    if(data.length==0){
+        return res.status(400).send("BAD REQUEST")
     }
     else{
         
