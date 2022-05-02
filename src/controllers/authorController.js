@@ -7,13 +7,13 @@ const createAuthor= async function (req, res) {
         
     
         let savedData = await authorModel.create(data)
-        res.status(201).send({ msg: savedData })
+        res.status(201).send({ status:true,data: savedData })
         
     
     }
     catch (err) {
         
-        res.status(400).send({ msg: "Error", error: err.message })
+        res.status(400).send({ status:false, data: err.message })
     }
 
 }
@@ -23,16 +23,16 @@ const loginAuthor=async function(req,res){
     let {email,password}=req.body
     let data=await authorModel.findOne({email:email,password:password})
     if(!data){
-        res.status(400).send("Please provide valid email id and password")
+        res.status(400).send({status:false,data:"Please provide valid email id and password"})
     } 
     else{
         let token=jwt.sign({userId:data._id,batch:"uranium"},"Project1")
-        res.status(200).send({msg:token})
+        res.status(200).send({status:true,data:{token:token}})
 
     }
 }
 catch(err){
-    res.status(500).send({msg:err.message})
+    res.status(500).send({status:false,data:err.message})
 }
 
 }
