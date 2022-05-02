@@ -7,11 +7,11 @@ const authorModel=require("../models/authorModel")
 
 const createBlogs = async function (req, res) {
     try {
-        let data = req.body 
+        let data1 = req.body 
         
         
-        let savedData = await blogsModel.create(data) //if all the consitions satisfy then like title,body etc all the mandatory so it will execute this
-        return res.status(201).send({ msg: savedData })
+        let savedData = await blogsModel.create(data1) //if all the consitions satisfy then like title,body etc all the mandatory so it will execute this
+        return res.status(201).send({ data: savedData })
         
     }
     catch (err) {
@@ -22,14 +22,14 @@ const createBlogs = async function (req, res) {
 
 const getBlogs=async function(req,res){
     try{
-        let data=req.query 
+        let data2=req.query 
         
-        let data1=await blogsModel.find({$and:[data,{isDeleted:false},{isPublished:true}]}) //checks whether all the conditions will satisfy or not if not then send error message
+        let data1=await blogsModel.find({$and:[data2,{isDeleted:false},{isPublished:true}]}) //checks whether all the conditions will satisfy or not if not then send error message
         if(data1.length===0){
             return res.status(404).send({msg:"Not Found"})
         }
         else{
-            return res.status(200).send({msg:data1})
+            return res.status(200).send({data:data1})
 
         }
 
@@ -90,7 +90,7 @@ const updateBlogs=async function(req,res){
         updateBlog.isPublished=true
         updateBlog.publishedAt=`${date}`
         updateBlog.save() //updates the particular document if present or create the document if it is not present 
-        res.status(200).send({msg:updateBlog})
+        res.status(200).send({data:updateBlog})
 
     }
     catch(err){
