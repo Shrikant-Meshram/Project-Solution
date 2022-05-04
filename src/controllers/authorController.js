@@ -11,7 +11,7 @@ const isValidTitle=function(title){
     return ["Mr","Miss","Mrs"].indexOf(title)!==-1
 }
 const isValidRequestBody=function(body){
-    return Object.keys(body).length>0 
+    return Object.keys(body).length > 0 
 }
 
 const createAuthor= async function (req, res) {
@@ -56,12 +56,7 @@ const createAuthor= async function (req, res) {
             return res.status(400).send({status:false,message:"email address is already registered"})
         }
         const author=await authorModel.create(body)
-        res.status(201).send({status:true,message:"created successfully",data:author})
-
-
-
-        
-    
+        res.status(201).send({status:true,message:"created successfully",data:author})  
     }
     catch (err) {
         
@@ -78,6 +73,7 @@ const loginAuthor=async function(req,res){
     }        
     let {email,password}=req.body
     if(!isValid(email)){
+        
         return res.status(400).send({status:false,message:"Email is required"})
 
     }

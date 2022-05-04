@@ -16,5 +16,3 @@ const blogsSchema = new mongoose.Schema( {
 
 module.exports = mongoose.model('Blogs', blogsSchema) 
 
-
-

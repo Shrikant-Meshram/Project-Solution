@@ -1,13 +1,15 @@
 const mongoose=require("mongoose")
 const blogsModel = require("../models/blogsModel")
 const authorModel=require("../models/authorModel")
+
+
 const isValid=function(value){
     if(typeof value==="undefined" || value===null)return false 
     if(typeof value==="string" && value.trim().length===0)return false 
     return true
 }
 const isValidRequestBody=function(body){
-    return Object.keys(body).length>0 
+    return Object.keys(body).length > 0 
 }
 const isValidObjectId=function(objectId){
     return mongoose.Types.ObjectId.isValid(objectId)
@@ -53,7 +55,7 @@ const createBlogs = async function (req, res) {
         reqbody.publishedAt=new Date()
     }
     const blog=await blogsModel.create(reqbody)
-    return res.status(201).send({status:false,message:"created successfully",data:blog})
+    return res.status(201).send({status:true,message:"created successfully",data:blog})
         
 }
     catch (err) {
